@@ -1,0 +1,128 @@
+/* General */
+body {
+  background-color: #0089B2;
+  color: #FF8C19;
+  font-family: Helvetica, Verdana, sans-serif;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+}
+
+/* Header */
+header {
+  margin-top: 100px;
+  margin-bottom: 50px;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 4em;
+  text-align: center;
+}
+
+.slogan {
+  color: #dedede;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 1.2em;
+}
+
+/* Content */
+.pulse {
+  background-color: rgba(#c62319, 0.7);
+  width: 50px;
+  height: 50px;
+
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  -ms-border-radius: 25px;
+  border-radius: 25px;
+
+  transition: all 50ms linear;
+}
+
+.pulse[data-active="true"] {
+    background-color: rgba(#c62319, 1);
+}
+
+.play-toggle {
+  background-color: #c9cbd0;
+  color: #0089B2;
+  font-size: 1.5em;
+  font-weight: bold;
+  width: 100px;
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+  margin: auto;
+
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  -ms-border-radius: 25px;
+  border-radius: 25px;
+
+  transition: all 300ms linear;
+}
+
+.play-toggle[data-active=true] {
+  background-color: #f7f8fb;
+  color: #0089B2;
+}
+
+.play-toggle:hover {
+  background-color: #FF7F00;
+  color: #dedede;
+}
+
+.progress {
+  background-color: #c9cbd0;
+  color: #0089B2;
+  font-size: 1.5em;
+  font-weight: bold;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 30px;
+
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  -ms-border-radius: 25px;
+  border-radius: 25px;
+
+  transition: all 300ms linear;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-color: #FF7F00;
+
+  width: 0%;
+  height: 50px;
+
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  -ms-border-radius: 25px;
+  border-radius: 25px;
+}
+
+/* Footer */
+footer {
+  margin-top: 100px;
+}
+
+footer p {
+  font-family: Consolas, Courier, monospace;
+  text-align: right;
+}
