@@ -6,7 +6,7 @@ $(document).ready(function () {
   var currentBPM = startBPM;
   var tickCounter = 1;
   var totalTickCounter = 0;
-  var tickAmount = 16;
+  var tickAmount = 4;
   var bpmIncrease = 10;
   var audio = new Audio('res/tick.mp3');
 
@@ -14,7 +14,22 @@ $(document).ready(function () {
     return Math.round((60 / bpm) * 1000);
   };
 
+  var updateTickUI = function() {
+    var increaseTimes = ((endBPM - startBPM) / bpmIncrease) + 1;
+    var progress = (tickCounter / tickAmount) / increaseTimes;
+    if (tickCounter === 1) {
+      $(".progress").append($("<div class='progress-bar'>").width(0));
+    }
+    $(".progress div:nth-last-child(2)").css("width", progress * 100 + "%");
+
+    $(".pulse").attr("data-active", true);
+    setTimeout(function() {
+      $(".pulse").attr("data-active", false);
+    }, 100);
+  }
+
   var incrementTick = function() {
+    updateTickUI();
     tickCounter++;
     totalTickCounter++;
     if (tickCounter === tickAmount + 1) {
@@ -23,6 +38,7 @@ $(document).ready(function () {
       if (currentBPM > endBPM) {
         playing = false;
         finished = true;
+        $(".play-toggle").text("OFF").attr("data-active", false);
       }
     }
   };
@@ -33,21 +49,19 @@ $(document).ready(function () {
       audio.play();
       setTimeout(setTimeoutCallback, bpmToMs(currentBPM));
       incrementTick();
-      var progress = totalTickCounter / (((endBPM - startBPM) / bpmIncrease) * tickAmount);
-      $(".progress-bar").css("width", progress * 100 + "%");
     }
   };
 
   $(".play-toggle").on("click", function() {
     if (!playing) {
-      $(".play-toggle").text("ON").attr("data-active", "true");
+      $(".play-toggle").text("ON").attr("data-active", true);
       $(".counter").text(tickCounter);
       incrementTick();
       audio.play();
       playing = true;
       setTimeout(setTimeoutCallback, bpmToMs(currentBPM));
     } else {
-      $(".play-toggle").text("OFF").attr("data-active", "false");
+      $(".play-toggle").text("OFF").attr("data-active", false);
       playing = false;
     }
   });
