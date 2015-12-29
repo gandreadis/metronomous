@@ -13,6 +13,7 @@ body {
 .container {
   max-width: 800px;
   margin: auto;
+  position: relative;
 }
 
 /* Header */
@@ -87,6 +88,38 @@ h1 {
 .play-toggle:hover {
   background-color: #FF7F00;
   color: #dedede;
+}
+
+.new-tempo {
+  opacity: 0;
+  display: inline-block;
+  position: relative;
+  left: 430px;
+  background-color: #0a3bb6;
+  color: #bfc9cc;
+  font-size: 1.5em;
+  font-weight: bold;
+  width: auto;
+  padding: 0 20px;
+  height: 50px;
+  line-height: 50px;
+  vertical-align: middle;
+  text-align: center;
+
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  -ms-border-radius: 25px;
+  border-radius: 25px;
+
+  -webkit-transition: opacity 300ms ease-in-out;
+  -moz-transition: opacity 300ms ease-in-out;
+  -ms-transition: opacity 300ms ease-in-out;
+  -o-transition: opacity 300ms ease-in-out;
+  transition: opacity 300ms ease-in-out;
+}
+
+.new-tempo[data-active=true] {
+  opacity: 1;
 }
 
 .progress {
