@@ -18,9 +18,9 @@ $(document).ready(function () {
     var increaseTimes = ((endBPM - startBPM) / bpmIncrease) + 1;
     var progress = (tickCounter / tickAmount) / increaseTimes;
     if (tickCounter === 1) {
-      $(".progress").append($("<div class='progress-bar'>").width(0));
+      $(".progress :last-child").after($("<div class='progress-bar'>").width(0));
     }
-    $(".progress div:nth-last-child(2)").css("width", progress * 100 + "%");
+    $(".progress div:nth-last-child(2)").css("width", progress * 100 + "%").text(currentBPM);
 
     $(".pulse").attr("data-active", true);
     setTimeout(function() {
