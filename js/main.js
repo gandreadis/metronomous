@@ -5,7 +5,6 @@ $(document).ready(function () {
   var endBPM = 120;
   var currentBPM = startBPM;
   var tickCounter = 1;
-  var totalTickCounter = 0;
   var tickAmount = 4;
   var bpmIncrease = 10;
   var audio = new Audio('res/tick.mp3');
@@ -19,6 +18,12 @@ $(document).ready(function () {
     var progress = (tickCounter / tickAmount) / increaseTimes;
     if (tickCounter === 1) {
       $(".progress :last-child").after($("<div class='progress-bar'>").width(0));
+      if (currentBPM != startBPM) {
+        $(".new-tempo").attr("data-active", true);
+        setTimeout(function() {
+          $(".new-tempo").attr("data-active", false);
+        }, 2000);
+      }
     }
     $(".progress div:nth-last-child(2)").css("width", progress * 100 + "%").text(currentBPM);
 
@@ -31,7 +36,6 @@ $(document).ready(function () {
   var incrementTick = function() {
     updateTickUI();
     tickCounter++;
-    totalTickCounter++;
     if (tickCounter === tickAmount + 1) {
       currentBPM += bpmIncrease;
       tickCounter = 1;
@@ -53,6 +57,9 @@ $(document).ready(function () {
   };
 
   $(".play-toggle").on("click", function() {
+    if (finished) {
+      return;
+    }
     if (!playing) {
       $(".play-toggle").text("ON").attr("data-active", true);
       $(".counter").text(tickCounter);
