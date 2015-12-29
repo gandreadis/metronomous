@@ -1,8 +1,10 @@
+// Max-BPM: 280
+
 $(document).ready(function () {
   var playing = false;
   var finished = false;
-  var startBPM = 60;
-  var endBPM = 120;
+  var startBPM = 200;
+  var endBPM = 280;
   var currentBPM = startBPM;
   var tickCounter = 1;
   var tickAmount = 4;
@@ -17,12 +19,13 @@ $(document).ready(function () {
     var increaseTimes = ((endBPM - startBPM) / bpmIncrease) + 1;
     var progress = (tickCounter / tickAmount) / increaseTimes;
     if (tickCounter === 1) {
-      $(".progress :last-child").after($("<div class='progress-bar'>").width(0));
+      var currentIncrease = ((currentBPM - startBPM) / bpmIncrease) + 1;
+      $(".progress :last-child").after($("<div class='progress-bar'>").width(0).css("background-color", currentIncrease % 2 === 0 ? "#FF7F00" : "#994c00"));
       if (currentBPM != startBPM) {
         $(".new-tempo").attr("data-active", true);
         setTimeout(function() {
           $(".new-tempo").attr("data-active", false);
-        }, 2000);
+        }, bpmToMs(currentBPM) * tickAmount > 2000 ? 2000 : bpmToMs(currentBPM) * tickAmount * 0.5);
       }
     }
     $(".progress div:nth-last-child(2)").css("width", progress * 100 + "%").text(currentBPM);
