@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="css/reset.css" type="text/css">
     <link rel="stylesheet" href="css/stylesheet.css" type="text/css">
     <script src="js/jquery-1.11.3.js"></script>
+    <!-- <script src="js/jquery-ui.min.js"></script> -->
     <script src="js/main.js"></script>
   </head>
   <body>
@@ -15,8 +16,36 @@
         <p class="slogan">practice to speed up</p>
       </header>
       <main>
-        <div class="pulse" data-active="false"></div>
-        <div class="play-toggle" data-active="false">OFF</div>
+        <div class="settings">
+          <div class="start">
+            <div class="label">start (BPM)</div>
+            <input type="text" title="start (BPM)">
+            <div class="line"></div>
+            <div class="handle"></div>
+          </div>
+          <div class="end">
+            <div class="label">end (BPM)</div>
+            <input type="text" title="end (BPM)">
+            <div class="line"></div>
+            <div class="handle"></div>
+          </div>
+          <div class="increase">
+            <div class="label">step (BPM)</div>
+            <input type="text" title="step (BPM)">
+            <div class="line"></div>
+            <div class="handle"></div>
+          </div>
+          <div class="time">
+            <div class="label">time (min.)</div>
+            <input type="text" title="time (min.)">
+            <div class="line"></div>
+            <div class="handle"></div>
+          </div>
+        </div>
+        <div>
+          <div class="pulse" data-active="false"></div>
+          <div class="play-toggle" data-active="false">OFF</div>
+        </div>
         <div class="new-tempo" data-active="false">new tempo!</div>
         <div class="progress">
           <div class="progress-bar"></div>

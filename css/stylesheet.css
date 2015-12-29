@@ -36,6 +36,81 @@ h1 {
 }
 
 /* Content */
+/* > Settings */
+.settings {
+  display: inline-block;
+  position: relative;
+  margin: 0px 100px 20px 100px;
+}
+
+.settings > div {
+  display: inline-block;
+  width: 100px;
+  margin: 0px 20px;
+  text-align: center;
+  padding: auto;
+}
+
+.settings .label {
+  color: #dedede;
+  margin-bottom: 10px;
+}
+
+.settings input {
+  width: 30px;
+  font-family: Consolas, Courier, monospace;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+  border: none;
+  border-bottom: 5px solid #000000;
+  padding: 3px;
+
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+
+  transition: border-color 200ms ease-in-out;
+}
+
+.settings input[data-invalid="true"] {
+  border-color: #c80f0f;
+}
+
+.settings .line {
+  background-color: #111111;
+  width: 4px;
+  height: 150px;
+  margin: auto;
+
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  border-radius: 2px;
+}
+
+.settings .handle {
+  background-color: #dedede;
+  position: relative;
+  left: 35px;
+  bottom: 30px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  -ms-border-radius: 100%;
+  border-radius: 100%;
+
+  transition: background-color 200ms ease-in-out;
+}
+
+.handle:hover {
+  background-color: #ffffff;
+}
+
+/* > Metronome */
 .pulse {
   display: inline-block;
   position: relative;

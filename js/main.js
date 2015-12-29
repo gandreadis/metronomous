@@ -1,15 +1,45 @@
 // Max-BPM: 280
 
-$(document).ready(function () {
+$(document).ready(function() {
+  // INITIALIZE SETTTINGS
+  (function() {
+    var $inputs = $(".settings input")
+    $inputs.each(function() {
+      $(this).val(0);
+    });
+    $inputs.change(function() {
+      if (isNaN($(this).val())) {
+        $(this).attr("data-invalid", true);
+      } else {
+        $(this).attr("data-invalid", false);
+      }
+    });
+
+    
+  })();
+
+
   var playing = false;
   var finished = false;
-  var startBPM = 200;
-  var endBPM = 280;
+  var startBPM = 60;
+  var endBPM = 120;
   var currentBPM = startBPM;
   var tickCounter = 1;
   var tickAmount = 4;
   var bpmIncrease = 10;
   var audio = new Audio('res/tick.mp3');
+  audio.volume = 0.1;
+
+  var setSettings = function(newStart, newEnd, newAmount, newIncrease) {
+    playing = false;
+    finished = false;
+    startBPM = newStart;
+    endBPM = newEnd;
+    currentBPM = startBPM;
+    tickCounter = 1;
+    tickAmount = newAmount;
+    bpmIncrease = newIncrease;
+  };
 
   var bpmToMs = function(bpm) {
     return Math.round((60 / bpm) * 1000);
@@ -25,7 +55,7 @@ $(document).ready(function () {
         $(".new-tempo").attr("data-active", true);
         setTimeout(function() {
           $(".new-tempo").attr("data-active", false);
-        }, bpmToMs(currentBPM) * tickAmount > 2000 ? 2000 : bpmToMs(currentBPM) * tickAmount * 0.5);
+        }, bpmToMs(currentBPM) * tickAmount * 0.5 > 2000 ? 2000 : bpmToMs(currentBPM) * tickAmount * 0.5);
       }
     }
     $(".progress div:nth-last-child(2)").css("width", progress * 100 + "%").text(currentBPM);
