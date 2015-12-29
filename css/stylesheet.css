@@ -18,7 +18,7 @@ body {
 
 /* Header */
 header {
-  margin-top: 100px;
+  margin-top: 50px;
   margin-bottom: 50px;
 }
 
@@ -64,6 +64,7 @@ h1 {
   border: none;
   border-bottom: 5px solid #000000;
   padding: 3px;
+  text-align: center;
 
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;

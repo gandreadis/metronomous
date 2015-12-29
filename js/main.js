@@ -1,21 +1,46 @@
 // Max-BPM: 280
 
+var util = {
+  mapInputToOutput: function(input, min, max) {
+    return 120 * ((input - min) / (max - min));
+  }
+};
+
 $(document).ready(function() {
   // INITIALIZE SETTTINGS
   (function() {
-    var $inputs = $(".settings input")
-    $inputs.each(function() {
-      $(this).val(0);
-    });
+    var $inputs = $(".settings input");
     $inputs.change(function() {
-      if (isNaN($(this).val())) {
+      var value = $(this).val();
+      if (isNaN(value)) {
         $(this).attr("data-invalid", true);
       } else {
-        $(this).attr("data-invalid", false);
+        var parent = $(this).parent();
+        var intValue = parseInt(value);
+        if ((parent.is(".start") && intValue >= 30 && intValue <= 280) ||
+            (parent.is(".end") && intValue >= 30 && intValue <= 280) ||
+            (parent.is(".increase") && intValue >= 1 && intValue <= 30) ||
+            (parent.is(".time") && intValue >= 1 && intValue <= 60)) {
+          $(this).attr("data-invalid", false);
+          var min, max;
+          if (parent.is(".start") || parent.is(".end")) {
+            min = 30;
+            max = 280;
+          } else if (parent.is(".increase")) {
+            min = 1;
+            max = 30;
+          } else if (parent.is(".time")) {
+            min = 1;
+            max = 60;
+          }
+          $(this).parent().children(".handle").css("bottom", 30 + util.mapInputToOutput(intValue, min, max));
+        } else {
+          $(this).attr("data-invalid", true);
+        }
+
       }
     });
 
-    
   })();
 
 
