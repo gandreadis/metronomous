@@ -80,7 +80,7 @@ h1 {
 
 .settings .line {
   background-color: #111111;
-  width: 4px;
+  width: 5px;
   height: 150px;
   margin: auto;
 
@@ -107,7 +107,7 @@ h1 {
   transition: background-color 200ms ease-in-out;
 }
 
-.handle:hover {
+.handle[data-active="true"], .handle:hover {
   background-color: #ffffff;
 }
 

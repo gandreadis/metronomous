@@ -3,6 +3,10 @@
 var util = {
   mapInputToOutput: function(input, min, max) {
     return 120 * ((input - min) / (max - min));
+  },
+
+  mapOutputToInput: function(output, min, max) {
+    return Math.round((output / 150) * (max - min) + min);
   }
 };
 
@@ -37,21 +41,58 @@ $(document).ready(function() {
         } else {
           $(this).attr("data-invalid", true);
         }
-
       }
     });
 
+    var clicked = false;
+    var $handle_target;
+    var min, max;
+    $(".settings .handle").on("mousedown", function(event) {
+      clicked = true;
+      $handle_target = $(event.target);
+      $handle_target.attr("data-active", true);
+      var parent = $handle_target.parent();
+      if (parent.is(".start") || parent.is(".end")) {
+        min = 30;
+        max = 280;
+      } else if (parent.is(".increase")) {
+        min = 1;
+        max = 30;
+      } else if (parent.is(".time")) {
+        min = 1;
+        max = 60;
+      }
+    });
+
+    $("body").on("mousemove", function(event) {
+      if (clicked) {
+        if ($(".line").offset().top + 165 - event.pageY <= 30) {
+          $handle_target.css("bottom", 30);
+          $handle_target.parent().children("input").val(min);
+          return;
+        } else if ($(".line").offset().top + 15 - event.pageY >= 0) {
+          $handle_target.css("bottom", 150);
+          $handle_target.parent().children("input").val(max);
+          return;
+        }
+        $handle_target.css("bottom", $(".line").offset().top + 165 - event.pageY);
+        $handle_target.parent().children("input").val(
+          util.mapOutputToInput(parseInt($handle_target.css("bottom")) - 30, min, max));
+      }
+    });
+
+    var mouse_disable = function(event) {
+      clicked = false;
+      if ($handle_target) {
+        $handle_target.attr("data-active", false);
+      }
+    };
+    $("body").on("mouseup", mouse_disable);
+    $("body").on("mouseleave", mouse_disable);
   })();
 
 
-  var playing = false;
-  var finished = false;
-  var startBPM = 60;
-  var endBPM = 120;
-  var currentBPM = startBPM;
-  var tickCounter = 1;
-  var tickAmount = 4;
-  var bpmIncrease = 10;
+  var playing, finished, startBPM, endBPM, currentBPM, tickCounter, tickAmount, bpmIncrease;
   var audio = new Audio('res/tick.mp3');
   audio.volume = 0.1;
 
