@@ -111,6 +111,10 @@ h1 {
   background-color: #ffffff;
 }
 
+.handle[data-disabled="true"] {
+  background-color: #454545;
+}
+
 /* > Metronome */
 .pulse {
   display: inline-block;
@@ -161,7 +165,13 @@ h1 {
   color: #0089B2;
 }
 
-.play-toggle:hover {
+.play-toggle[data-disabled=true] {
+  background-color: #232323;
+  color: #999999;
+  cursor: default;
+}
+
+.play-toggle:hover[data-disabled=false] {
   background-color: #FF7F00;
   color: #dedede;
 }
