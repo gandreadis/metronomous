@@ -199,7 +199,7 @@ $(document).ready(function() {
     var progress = (tickCounter / tickAmount) / stepTimes;
     if (tickCounter === 1) {
       var currentStep = ((currentBPM - startBPM) / bpmStep) + 1;
-      $(".progress :last-child").after($("<div class='progress-bar'>").width(0).css("background-color", currentStep % 2 === 0 ? "#FF7F00" : "#994c00"));
+      $(".progress :last-child").after($("<div class='progress-bar'>").width(0).css("background-color", currentStep % 2 === 0 ? "#17861f" : "#28b916"));
       if (currentBPM != startBPM) {
         $(".new-tempo").attr("data-active", true);
         setTimeout(function() {
