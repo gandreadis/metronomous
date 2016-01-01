@@ -242,7 +242,7 @@ $(document).ready(function() {
 
         $(".settings input").prop("disabled", false);
         $(".settings .handle").attr("data-disabled", false);
-        $(".play-toggle").text("OFF").attr("data-active", false);
+        $(".play-toggle").text("\u25B6").attr("data-active", false);
       }
     }
   };
