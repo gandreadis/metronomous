@@ -5,16 +5,22 @@ $(document).ready(function() {
   var MAXSTEP = 30;
   var MINTIME = 1;
   var MAXTIME = 60;
+  var MINVOLUME = 1;
+  var MAXVOLUME = 100;
+  var VOLUMESCALING = 0.01;
   var freshState = true;
 
   var HANDLEOFFSET = 30;
+
+  var playing, startBPM, endBPM, currentBPM, tickCounter, tickAmount, bpmStep;
+  var audio = new Audio('res/tick.mp3');
 
   var util = {
     mapInputToOutput: function(input, min, max) {
       return 120 * ((input - min) / (max - min));
     },
     mapOutputToInput: function(output, min, max) {
-      return Math.round((output / 150) * (max - min) + min);
+      return Math.round((output / 120) * (max - min) + min);
     },
     bpmToMs: function(bpm) {
       return Math.round((60 / bpm) * 1000);
@@ -24,12 +30,14 @@ $(document).ready(function() {
       var endVal = parseInt($(".settings .end input").val());
       var stepVal = parseInt($(".settings .step input").val());
       var timeVal = parseInt($(".settings .time input").val());
+      var volumeVal = parseInt($(".settings .volume input").val());
 
       return startVal >= MINBPM && startVal <= MAXBPM &&
         endVal >= MINBPM && endVal <= MAXBPM &&
         startVal <= endVal &&
         stepVal >= MINSTEP && stepVal <= MAXSTEP &&
-        timeVal >= MINTIME && timeVal <= MAXTIME;
+        timeVal >= MINTIME && timeVal <= MAXTIME &&
+        volumeVal >= MINVOLUME && volumeVal <= MAXVOLUME;
     },
     calculateTickAmount: function(min, max, step, minutes) {
       var sum = 0;
@@ -43,6 +51,8 @@ $(document).ready(function() {
 
   // INITIALIZE SETTTINGS
   (function() {
+    $(".settings div input").prop("disabled", false);
+
     var $inputs = $(".settings input");
     $inputs.change(function() {
       var value = $(this).val();
@@ -54,7 +64,8 @@ $(document).ready(function() {
         if ((parent.is(".start") && intValue >= MINBPM && intValue <= MAXBPM) ||
             (parent.is(".end") && intValue >= MINBPM && intValue <= MAXBPM) ||
             (parent.is(".step") && intValue >= MINSTEP && intValue <= MAXSTEP) ||
-            (parent.is(".time") && intValue >= MINTIME && intValue <= MAXTIME)) {
+            (parent.is(".time") && intValue >= MINTIME && intValue <= MAXTIME) ||
+            (parent.is(".volume") && intValue >= MINVOLUME && intValue <= MAXVOLUME)) {
           $(this).attr("data-invalid", false);
           var min, max;
           if (parent.is(".start") || parent.is(".end")) {
@@ -66,8 +77,14 @@ $(document).ready(function() {
           } else if (parent.is(".time")) {
             min = MINTIME;
             max = MAXTIME;
+          } else if (parent.is(".volume")) {
+            min = MINVOLUME;
+            max = MAXVOLUME;
+            audio.volume = intValue * VOLUMESCALING;
           }
-          $(this).parent().children(".handle").css("bottom", HANDLEOFFSET + util.mapInputToOutput(intValue, min, max));
+          $(this).parent().children(".handle").css("bottom",
+            HANDLEOFFSET + util.mapInputToOutput(intValue, min, max));
+
           if (parseInt($(".end input").val()) < parseInt($(".start input").val())) {
             $(".end input").attr("data-invalid", true);
           } else {
@@ -101,27 +118,40 @@ $(document).ready(function() {
       } else if (parent.is(".time")) {
         min = MINTIME;
         max = MAXTIME;
+      } else if (parent.is(".volume")) {
+        min = MINVOLUME;
+        max = MAXVOLUME;
       }
     });
 
     $("body").on("mousemove", function(event) {
       if (clicked) {
-        if (!freshState) {
+        if (!freshState && !$handle_target.parent().is(".volume")) {
           return;
         }
         if ($(".line").offset().top + 165 - event.pageY <= HANDLEOFFSET) {
           $handle_target.css("bottom", HANDLEOFFSET);
           $handle_target.parent().children("input").val(min);
+          if ($handle_target.parent().is(".volume")) {
+            audio.volume = MINVOLUME * VOLUMESCALING;
+          }
           return;
         } else if ($(".line").offset().top + 15 - event.pageY >= 0) {
           $handle_target.css("bottom", 150);
           $handle_target.parent().children("input").val(max);
+          if ($handle_target.parent().is(".volume")) {
+            audio.volume = MAXVOLUME * VOLUMESCALING;
+          }
           return;
         }
 
         $handle_target.css("bottom", $(".line").offset().top + 165 - event.pageY);
-        $handle_target.parent().children("input").val(
-          util.mapOutputToInput(parseInt($handle_target.css("bottom")) - HANDLEOFFSET, min, max));
+
+        var value = util.mapOutputToInput(parseInt($handle_target.css("bottom")) - HANDLEOFFSET, min, max);
+        if ($handle_target.parent().is(".volume")) {
+          audio.volume = value * VOLUMESCALING;
+        }
+        $handle_target.parent().children("input").val(value);
 
         if (parseInt($(".end input").val()) < parseInt($(".start input").val())) {
           $(".end input").attr("data-invalid", true);
@@ -150,12 +180,8 @@ $(document).ready(function() {
     $(".settings .end input").val(100).change();
     $(".settings .step input").val(5).change();
     $(".settings .time input").val(5).change();
+    $(".settings .volume input").val(50).change();
   })();
-
-
-  var playing, startBPM, endBPM, currentBPM, tickCounter, tickAmount, bpmStep;
-  var audio = new Audio('res/tick.mp3');
-  audio.volume = 0.1;
 
   var setSettings = function(newStart, newEnd, newStep, newAmount) {
     playing = false;
@@ -232,8 +258,8 @@ $(document).ready(function() {
           parseInt($(".time input").val()))
       );
 
-      $(".settings input").prop("disabled", true);
-      $(".settings .handle").attr("data-disabled", true);
+      $(".settings div:not(.volume) input").prop("disabled", true);
+      $(".settings div:not(.volume) .handle").attr("data-disabled", true);
     }
 
     if (!playing) {
