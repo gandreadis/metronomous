@@ -14,6 +14,7 @@
 // along with metronomous.  If not, see <http://www.gnu.org/licenses/>.
 
 $(document).ready(function() {
+  /* Global constants */
   var MINBPM = 30;
   var MAXBPM = 280;
   var MINSTEP = 1;
@@ -23,13 +24,14 @@ $(document).ready(function() {
   var MINVOLUME = 1;
   var MAXVOLUME = 100;
   var VOLUMESCALING = 0.01;
-  var freshState = true;
-
   var HANDLEOFFSET = 30;
 
+  /* State variables */
+  var freshState = true;
   var playing, startBPM, endBPM, currentBPM, tickCounter, tickAmount, bpmStep;
   var audio = new Audio('res/tick.mp3');
 
+  /* Utility functions (mostly static) for common calculations and actions */
   var util = {
     mapInputToOutput: function(input, min, max) {
       return 120 * ((input - min) / (max - min));
@@ -61,15 +63,26 @@ $(document).ready(function() {
       }
 
       return Math.floor((minutes * 60) / sum);
+    },
+    getMinMax: function(parent) {
+      if (parent.is(".start") || parent.is(".end")) {
+        return [MINBPM, MAXBPM];
+      } else if (parent.is(".step")) {
+        return [MINSTEP, MAXSTEP];
+      } else if (parent.is(".time")) {
+        return [MINTIME, MAXTIME];
+      } else if (parent.is(".volume")) {
+        return [MINVOLUME, MAXVOLUME];
+      }
     }
   };
 
-  // INITIALIZE SETTTINGS
+  /* Setup of the settings box */
   (function() {
     $(".settings div input").prop("disabled", false);
 
-    var $inputs = $(".settings input");
-    $inputs.change(function() {
+    /* Connect event handler to input value changes */
+    $(".settings input").change(function() {
       var value = $(this).val();
       if (isNaN(value)) {
         $(this).attr("data-invalid", true);
@@ -82,23 +95,12 @@ $(document).ready(function() {
             (parent.is(".time") && intValue >= MINTIME && intValue <= MAXTIME) ||
             (parent.is(".volume") && intValue >= MINVOLUME && intValue <= MAXVOLUME)) {
           $(this).attr("data-invalid", false);
-          var min, max;
-          if (parent.is(".start") || parent.is(".end")) {
-            min = MINBPM;
-            max = MAXBPM;
-          } else if (parent.is(".step")) {
-            min = MINSTEP;
-            max = MAXSTEP;
-          } else if (parent.is(".time")) {
-            min = MINTIME;
-            max = MAXTIME;
-          } else if (parent.is(".volume")) {
-            min = MINVOLUME;
-            max = MAXVOLUME;
+          var minMax = util.getMinMax(parent);
+          if (parent.is(".volume")) {
             audio.volume = intValue * VOLUMESCALING;
           }
           $(this).parent().children(".handle").css("bottom",
-            HANDLEOFFSET + util.mapInputToOutput(intValue, min, max));
+            HANDLEOFFSET + util.mapInputToOutput(intValue, minMax[0], minMax[1]));
 
           if (parseInt($(".end input").val()) < parseInt($(".start input").val())) {
             $(".end input").attr("data-invalid", true);
@@ -116,6 +118,8 @@ $(document).ready(function() {
       }
     });
 
+    /* Connect event handler to mouse input changes, specifically targeted to
+    handles of settings sliders */
     var clicked = false;
     var $handle_target;
     var min, max;
@@ -124,19 +128,9 @@ $(document).ready(function() {
       $handle_target = $(event.target);
       $handle_target.attr("data-active", true);
       var parent = $handle_target.parent();
-      if (parent.is(".start") || parent.is(".end")) {
-        min = MINBPM;
-        max = MAXBPM;
-      } else if (parent.is(".step")) {
-        min = MINSTEP;
-        max = MAXSTEP;
-      } else if (parent.is(".time")) {
-        min = MINTIME;
-        max = MAXTIME;
-      } else if (parent.is(".volume")) {
-        min = MINVOLUME;
-        max = MAXVOLUME;
-      }
+      var minMax = util.getMinMax(parent);
+      min = minMax[0];
+      max = minMax[1];
     });
 
     $("body").on("mousemove", function(event) {
@@ -198,6 +192,7 @@ $(document).ready(function() {
     $(".settings .volume input").val(50).change();
   })();
 
+  /* Set the state variables of a session with the given values*/
   var setSettings = function(newStart, newEnd, newStep, newAmount) {
     playing = false;
     freshState = true;
@@ -209,6 +204,8 @@ $(document).ready(function() {
     bpmStep = newStep;
   };
 
+  /* Called at every tick of the metronome, to update the progress bars and the
+  visual feedback */
   var updateTickUI = function() {
     var stepTimes = ((endBPM - startBPM) / bpmStep) + 1;
     var progress = (tickCounter / tickAmount) / stepTimes;
@@ -230,6 +227,8 @@ $(document).ready(function() {
     }, 100);
   }
 
+  /* Called at every tick of the metronome, in order to update the state
+  variables */
   var incrementTick = function() {
     updateTickUI();
     tickCounter++;
@@ -247,6 +246,7 @@ $(document).ready(function() {
     }
   };
 
+  /* The Timeout callback, which plays the metronome tick sound */
   var setTimeoutCallback = function() {
     if (playing) {
       $(".counter").text(tickCounter);
@@ -256,6 +256,7 @@ $(document).ready(function() {
     }
   };
 
+  /* Connects event handlers for the play toggle button */
   $(".play-toggle").on("click", function() {
     if ($(".play-toggle").attr("data-disabled") == "true") {
       return;
