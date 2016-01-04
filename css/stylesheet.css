@@ -149,7 +149,7 @@ h1 {
 .pulse {
   display: inline-block;
   position: relative;
-  left: 320px;
+  left: 280px;
   top: 20px;
   background-color: #59130e;
   width: 50px;
@@ -170,7 +170,7 @@ h1 {
 .play-toggle {
   display: inline-block;
   position: relative;
-  left: 330px;
+  left: 290px;
   background-color: #c9cbd0;
   color: #0089B2;
   font-size: 1.5em;
@@ -210,7 +210,7 @@ h1 {
   opacity: 0;
   display: inline-block;
   position: relative;
-  left: 430px;
+  left: 390px;
   background-color: #0a3bb6;
   color: #bfc9cc;
   font-size: 1.5em;
