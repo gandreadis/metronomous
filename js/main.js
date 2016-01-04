@@ -74,6 +74,12 @@ $(document).ready(function() {
       } else if (parent.is(".volume")) {
         return [MINVOLUME, MAXVOLUME];
       }
+    },
+    activateSettings: function() {
+      $(".settings input").prop("disabled", false);
+      $(".settings .handle").attr("data-disabled", false);
+      $("#play").text("\u25B6");
+      $(".play-toggle").attr("data-active", false);
     }
   };
 
@@ -239,9 +245,7 @@ $(document).ready(function() {
         playing = false;
         freshState = true;
 
-        $(".settings input").prop("disabled", false);
-        $(".settings .handle").attr("data-disabled", false);
-        $(".play-toggle").text("\u25B6").attr("data-active", false);
+        util.activateSettings();
       }
     }
   };
@@ -257,8 +261,8 @@ $(document).ready(function() {
   };
 
   /* Connects event handlers for the play toggle button */
-  $(".play-toggle").on("click", function() {
-    if ($(".play-toggle").attr("data-disabled") == "true") {
+  $("#play").on("click", function() {
+    if ($("#play").attr("data-disabled") == "true") {
       return;
     }
 
@@ -279,15 +283,24 @@ $(document).ready(function() {
     }
 
     if (!playing) {
-      $(".play-toggle").text("\u275A\u275A").attr("data-active", true);
+      $("#play").text("\u275A\u275A").attr("data-active", true);
       incrementTick();
       audio.play();
       playing = true;
       freshState = false;
       setTimeout(setTimeoutCallback, util.bpmToMs(currentBPM));
     } else {
-      $(".play-toggle").text("\u25B6").attr("data-active", false);
+      $("#play").text("\u25B6").attr("data-active", false);
       playing = false;
+    }
+  });
+
+  $("#stop").on("click", function(event) {
+    if ($(event.target).attr("data-disabled") != "true") {
+      freshState = true;
+      playing = false;
+      $(".progress").empty();
+      util.activateSettings();
     }
   });
 });
