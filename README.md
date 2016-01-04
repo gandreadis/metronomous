@@ -10,7 +10,9 @@ This one can speed up the tempo gradually. So whenever you come across a difficu
 This way, you build up a solid technical skill of the piece you need to get just right, instead of rushing things through and calling it done.
 
 ## How can I use it?
-For an online version, head over to [gandreadis.github.io/metronomous](http://gandreadis.github.io/metronomous)
+For an online version, head over to [gandreadis.github.io/metronomous](http://gandreadis.github.io/metronomous).
+
+Alternatively, download the repo and open index.html in your browser of choice.
 
 ------
 
