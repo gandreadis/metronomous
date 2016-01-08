@@ -41,6 +41,12 @@ header {
   text-align: center;
 }
 
+header img {
+  position: relative;
+  top: 40px;
+  left: -10px;
+}
+
 h1 {
   display: inline-block;
   font-weight: bold;
@@ -50,7 +56,7 @@ h1 {
   height: 80px;
   line-height: 80px;
   vertical-align: middle;
-  padding: 0px 15px;
+  padding: 0px 25px;
 
   -webkit-border-radius: 40px;
   -moz-border-radius: 40px;
@@ -170,7 +176,8 @@ h1 {
 .play-toggle {
   display: inline-block;
   position: relative;
-  left: 290px;
+  left: 285px;
+  margin-left: 5px;
   background-color: #c9cbd0;
   color: #0089B2;
   font-size: 1.5em;
@@ -267,11 +274,6 @@ div.progress > div.progress-bar {
   vertical-align: middle;
   text-align: center;
   font-size: 1em;
-
-  /*-webkit-border-radius: 25px;
-  -moz-border-radius: 25px;
-  -ms-border-radius: 25px;
-  border-radius: 25px;*/
 
   transition: all 300ms linear;
 }
