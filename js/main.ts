@@ -12,7 +12,9 @@
 
    You should have received a copy of the GNU General Public License
    along with metronomous.  If not, see <http://www.gnu.org/licenses/>. */
+
 /// <reference path="jquery.d.ts" />
+
 $(document).ready(function () {
     /* Global constants */
     var MINBPM = 30;
@@ -25,27 +27,30 @@ $(document).ready(function () {
     var MAXVOLUME = 100;
     var VOLUMESCALING = 0.01;
     var HANDLEOFFSET = 30;
+
     /* State variables */
     var freshState = true;
     var playing, startBPM, endBPM, currentBPM, tickCounter, tickAmount, bpmStep;
     var audio = new Audio('res/tick.mp3');
+
     /* Utility functions (mostly static) for common calculations and actions */
     var util = {
-        mapInputToOutput: function (input, min, max) {
+        mapInputToOutput: function (input: number, min: number, max: number): number {
             return 120 * ((input - min) / (max - min));
         },
-        mapOutputToInput: function (output, min, max) {
+        mapOutputToInput: function (output: number, min: number, max: number): number {
             return Math.round((output / 120) * (max - min) + min);
         },
-        bpmToMs: function (bpm) {
+        bpmToMs: function (bpm: number): number {
             return Math.round((60 / bpm) * 1000);
         },
-        checkInputValidity: function () {
+        checkInputValidity: function (): boolean {
             var startVal = parseInt($(".settings .start input").val());
             var endVal = parseInt($(".settings .end input").val());
             var stepVal = parseInt($(".settings .step input").val());
             var timeVal = parseInt($(".settings .time input").val());
             var volumeVal = parseInt($(".settings .volume input").val());
+
             return startVal >= MINBPM && startVal <= MAXBPM &&
                 endVal >= MINBPM && endVal <= MAXBPM &&
                 startVal <= endVal &&
@@ -53,44 +58,43 @@ $(document).ready(function () {
                 timeVal >= MINTIME && timeVal <= MAXTIME &&
                 volumeVal >= MINVOLUME && volumeVal <= MAXVOLUME;
         },
-        calculateTickAmount: function (min, max, step, minutes) {
+        calculateTickAmount: function (min: number, max: number, step: number, minutes: number): number {
             var sum = 0;
             for (var i = min; i <= max; i += step) {
                 sum += 60 / i;
             }
+
             return Math.floor((minutes * 60) / sum);
         },
-        getMinMax: function (parent) {
+        getMinMax: function (parent: JQuery): number[] {
             if (parent.is(".start") || parent.is(".end")) {
                 return [MINBPM, MAXBPM];
-            }
-            else if (parent.is(".step")) {
+            } else if (parent.is(".step")) {
                 return [MINSTEP, MAXSTEP];
-            }
-            else if (parent.is(".time")) {
+            } else if (parent.is(".time")) {
                 return [MINTIME, MAXTIME];
-            }
-            else if (parent.is(".volume")) {
+            } else if (parent.is(".volume")) {
                 return [MINVOLUME, MAXVOLUME];
             }
         },
-        activateSettings: function () {
+        activateSettings: function (): void {
             $(".settings input").prop("disabled", false);
             $(".settings .handle").attr("data-disabled", false);
             $("#play").text("\u25B6");
             $(".play-toggle").attr("data-active", false);
         }
     };
+
     /* Setup of the settings box */
     (function () {
         $(".settings div input").prop("disabled", false);
+
         /* Connect event handler to input value changes */
         $(".settings input").change(function () {
             var value = $(this).val();
             if (isNaN(value)) {
                 $(this).attr("data-invalid", true);
-            }
-            else {
+            } else {
                 var parent = $(this).parent();
                 var intValue = parseInt(value);
                 if ((parent.is(".start") && intValue >= MINBPM && intValue <= MAXBPM) ||
@@ -103,31 +107,32 @@ $(document).ready(function () {
                     if (parent.is(".volume")) {
                         audio.volume = intValue * VOLUMESCALING;
                     }
-                    $(this).parent().children(".handle").css("bottom", HANDLEOFFSET + util.mapInputToOutput(intValue, minMax[0], minMax[1]));
+                    $(this).parent().children(".handle").css("bottom",
+                        HANDLEOFFSET + util.mapInputToOutput(intValue, minMax[0], minMax[1]));
+
                     var $endInput = $(".end input");
                     if (parseInt($endInput.val()) < parseInt($(".start input").val())) {
                         $endInput.attr("data-invalid", true);
-                    }
-                    else {
+                    } else {
                         $endInput.attr("data-invalid", false);
                     }
                     if (util.checkInputValidity()) {
                         $(".play-toggle").attr("data-disabled", false);
-                    }
-                    else {
+                    } else {
                         $(".play-toggle").attr("data-disabled", true);
                     }
-                }
-                else {
+                } else {
                     $(this).attr("data-invalid", true);
                 }
             }
         });
+
         /* Connect event handler to mouse input changes, specifically targeted to
          handles of settings sliders */
         var clicked = false;
         var $handle_target;
         var min, max;
+
         $(".settings .handle").on("mousedown", function (event) {
             clicked = true;
             $handle_target = $(event.target);
@@ -137,12 +142,14 @@ $(document).ready(function () {
             min = minMax[0];
             max = minMax[1];
         });
+
         var $body = $("body");
         $body.on("mousemove", function (event) {
             if (clicked) {
                 if (!freshState && !$handle_target.parent().is(".volume")) {
                     return;
                 }
+
                 var $lines = $(".line");
                 if ($lines.offset().top + 165 - event.pageY <= HANDLEOFFSET) {
                     $handle_target.css("bottom", HANDLEOFFSET);
@@ -151,8 +158,7 @@ $(document).ready(function () {
                         audio.volume = MINVOLUME * VOLUMESCALING;
                     }
                     return;
-                }
-                else if ($lines.offset().top + 15 - event.pageY >= 0) {
+                } else if ($lines.offset().top + 15 - event.pageY >= 0) {
                     $handle_target.css("bottom", 150);
                     $handle_target.parent().children("input").val(max);
                     if ($handle_target.parent().is(".volume")) {
@@ -160,27 +166,30 @@ $(document).ready(function () {
                     }
                     return;
                 }
+
                 $handle_target.css("bottom", $lines.offset().top + 165 - event.pageY);
+
                 var value = util.mapOutputToInput(parseInt($handle_target.css("bottom")) - HANDLEOFFSET, min, max);
                 if ($handle_target.parent().is(".volume")) {
                     audio.volume = value * VOLUMESCALING;
                 }
                 $handle_target.parent().children("input").val(value);
+
                 var $endInput = $(".end input");
                 if (parseInt($endInput.val()) < parseInt($(".start input").val())) {
                     $endInput.attr("data-invalid", true);
-                }
-                else {
+                } else {
                     $endInput.attr("data-invalid", false);
                 }
+
                 if (util.checkInputValidity()) {
                     $(".play-toggle").attr("data-disabled", false);
-                }
-                else {
+                } else {
                     $(".play-toggle").attr("data-disabled", true);
                 }
             }
         });
+
         var mouse_disable = function () {
             clicked = false;
             if ($handle_target) {
@@ -189,12 +198,14 @@ $(document).ready(function () {
         };
         $body.on("mouseup", mouse_disable);
         $body.on("mouseleave", mouse_disable);
+
         $(".settings .start input").val("60").change();
         $(".settings .end input").val("100").change();
         $(".settings .step input").val("5").change();
         $(".settings .time input").val("5").change();
         $(".settings .volume input").val("50").change();
     })();
+
     /* Set the state variables of a session with the given values*/
     var setSettings = function (newStart, newEnd, newStep, newAmount) {
         playing = false;
@@ -206,6 +217,7 @@ $(document).ready(function () {
         tickAmount = newAmount;
         bpmStep = newStep;
     };
+
     /* Called at every tick of the metronome, to update the progress bars and the
      visual feedback */
     var updateTickUI = function () {
@@ -222,11 +234,13 @@ $(document).ready(function () {
             }
         }
         $(".progress div:nth-last-child(2)").css("width", progress * 100 + "%").text(currentBPM);
+
         $(".pulse").attr("data-active", true);
         setTimeout(function () {
             $(".pulse").attr("data-active", false);
         }, 100);
     };
+
     /* Called at every tick of the metronome, in order to update the state
      variables */
     var incrementTick = function () {
@@ -238,10 +252,12 @@ $(document).ready(function () {
             if (currentBPM > endBPM) {
                 playing = false;
                 freshState = true;
+
                 util.activateSettings();
             }
         }
     };
+
     /* The Timeout callback, which plays the metronome tick sound */
     var setTimeoutCallback = function () {
         if (playing) {
@@ -251,12 +267,14 @@ $(document).ready(function () {
             incrementTick();
         }
     };
+
     /* Connects event handlers for the play toggle button */
     var $play = $("#play");
     $play.on("click", function () {
         if ($play.attr("data-disabled") == "true") {
             return;
         }
+
         var $progress = $(".progress");
         if (freshState) {
             $progress.empty();
@@ -264,10 +282,16 @@ $(document).ready(function () {
             var currentStart = parseInt($(".start input").val());
             var currentEnd = parseInt($(".end input").val());
             var currentStep = parseInt($(".step input").val());
-            setSettings(currentStart, currentEnd, currentStep, util.calculateTickAmount(currentStart, currentEnd, currentStep, parseInt($(".time input").val())));
+            setSettings(
+                currentStart, currentEnd, currentStep,
+                util.calculateTickAmount(currentStart, currentEnd, currentStep,
+                    parseInt($(".time input").val()))
+            );
+
             $(".settings div:not(.volume) input").prop("disabled", true);
             $(".settings div:not(.volume) .handle").attr("data-disabled", true);
         }
+
         if (!playing) {
             $play.text("\u275A\u275A").attr("data-active", true);
             incrementTick();
@@ -275,12 +299,12 @@ $(document).ready(function () {
             playing = true;
             freshState = false;
             setTimeout(setTimeoutCallback, util.bpmToMs(currentBPM));
-        }
-        else {
+        } else {
             $play.text("\u25B6").attr("data-active", false);
             playing = false;
         }
     });
+
     $("#stop").on("click", function (event) {
         if ($(event.target).attr("data-disabled") != "true") {
             freshState = true;
@@ -290,4 +314,3 @@ $(document).ready(function () {
         }
     });
 });
-//# sourceMappingURL=main.js.map
